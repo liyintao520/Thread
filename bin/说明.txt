@@ -1,0 +1,176 @@
+JAVA线程参考资料：F:\马士兵视频\java基础\尚学堂高淇java300集第二季\第二季
+中的线程方面的知识点
+JAVA中实现多线程（三）
+通过Callable接口实现多线程
+优点：可以获取返回值
+Callable和Future接口
+	Callable是类似于Runnable的接口，实现Callable接口的类和实现Runnable的类都是可被其他线程执行的任务
+	Callable和Runnable有几点不同
+	1）、Callable规定的方法是call()  而Runnable规定的方法是run();
+	2）、call()方法可抛出异常，而run()方法是不能抛出异常的。
+	3）、Callable的任务执行完后可返回值，运行Callable任务可拿到一个Future对象，而运行Runnable的任务是不能返回值的
+	Future表示一部计算的结果。它提供了检查计算是否完成的方法，一等待计算的完成，并检索计算的结果。
+	通过Future对象可了解任务执行情况，可取消任务的执行，还可获取任务执行的结果、
+	缺点：繁琐
+	思路：
+	1、创建Callable实现类 + 重写 call
+	2、借助执行调度服务 ExecutorService 获取 Future对象
+		ExecutorService ser = Executors.newFixedThreadPool(2);// 2 代表创建几个线程
+		Future result = ser.submit(实现类对象);
+	3、获取值 result.get();
+	4、停止服务 ser.shutdownNow();
+线程状态：
+	线程状态：
+		图片--
+		1、新生状态
+		2、就绪状态
+		3、运行状态
+		4、就绪状态
+		5、死亡状态
+	二、停止线程
+		1、自然终止：线程体正常执行完毕
+		2、外部干涉
+			1)、线程类中 定义 线程体使用的标识
+			2）、线程体使用该标识
+			3）、提供对外的方法来改变该标识
+			4）、外部根据条件调用该方法即可
+	三、阻塞
+		1、join():合并线程--等待该线程终止
+		2、yield(): 暂停自己的线程 ，并执行其他线程  是静态方法static
+		3、sleep(): 休眠，不释放锁
+			1）、与实践相关：倒计时
+			2）、模拟网络延时：
+		
+线程基本信息：com.lyt.thread.syn;
+			方法						功能
+		isAlive()				判断线程是否还“活”着，即线程是否还未终止
+		getPriority()			获得县城的优先级别
+		setPriority()			设置线程的优先级数值
+		setName()				给线程一个名字
+		getName()				取得线程的名字
+		currentThread()			静态方法，取得当前正在运行的线程对象，也就是取得自己本身
+		
+		notify()				唤醒在此对象监视器上等待的单个线程
+		notifyAll()				唤醒在此对象监视器上等待的所有线程
+	wait():等待，释放锁 sleep不释放锁	在其他线程调用此对象的notify()或者notifyAll()方法前，导致当前线程等待
+同步
+	同步又叫并发  多个线程访问同一份资源  确保资源安全--》线程安全
+	（多线程访问的情况下HashMap线程不安全  HashTable线程安全）
+	synchronized --》 同步
+	一、同步块
+		synchronized(引用类型|this|类.class){
+			
+		}
+	二、同步方法
+		synchronized
+	三、死锁：过多的同步容易造成死锁--ThreadSiSuo.java
+生产者消费者模式【可以解决死锁问题】com.lyt.thread.pro;
+	生产者消费者问题（英语：produce-consumer problem），也称有限缓冲问题
+	（Bounded-buffer problem），是一个多线程同步问题的经典案例。该问题描述
+	了两个共享固定大小缓冲区的线程--即所谓的“生产者”和“消费者”--在实际运行时会发生
+	的问题。生产者的主要作用是生产一定量的数据放到缓冲区中，然后重复此过程。与此同时，
+	消费者也在缓冲区消耗这些数据。该问题的关键就是要保证生产者不会在缓冲区满时加入数据，
+	消费者也不会在缓冲区中空时消耗数据。
+	解决该问题：
+		就必须让生产者在缓冲区满时休眠（要么干脆放弃数据），等到下次消费者消耗缓冲区中
+	的数据的时候，生产者才能被唤醒，开始往缓冲区添加数据。同样，也可以让消费者在缓冲区
+	空时进入休眠，等到生产者往缓冲区添加数据之后，在缓刑消费者。通常常用的方法有【信号灯法】
+	、【管程等】。如果解决方法不够完善，则容易出现死锁的情况。出现死锁时，两个线程都会休眠。
+	等待对方缓刑自己。
+定时--任务调度【Timer】com.lyt.thread.schedule
+	TimerTask类
+		schedule(TimerTask task, Date time)
+			安排在制定的时间执行指定的任务
+		schedule(TimerTask task, Date firstTime, long period)
+			安排指定的任务在制定的时间开始进行重复的固定延迟执行
+		schedule(TimerTask task, long delay)
+			安排在制定延迟后执行制定的任务
+		schedule(TimerTask task, long delay, long period)
+			安排指定的任务在指定的延迟后开始进行重的固定延迟执行
+		scheduleAtFixedRate(TimerTask task, Date firstTime, long period)
+			安排指定的任务在指定的时间开始进行重复的固定速率执行
+
+														线程池：
+线程池合理使用线程池带来的好处：
+	1、降低资源消耗：通过重复利用已创建的线程降低线程创建和销毁造成的消耗。
+	2、提高响应速度：当任务到达时，任务可以不需要等到线程常见就能立即执行。
+	3、提高线程的可管理性：线层是稀缺资源，如果无限制地创建不仅会消耗系统资源，
+	       还会降低系统的稳定性们使用线程池可以进行统一分配、调优和监控。
+
+一个简单的数据库连接池实示例：待续
+
+线程池技术及其示例：
+	public static <T> List<T> synchronizedList(List<T> list)返回指定列表支持的同步（线程安全的）列表。为了保证按顺序访问，必须通过返回的列表完成所有对底层实现列表的访问。
+在返回的列表上进行迭代时，用户必须手工在返回的列表上进行同步： 
+
+  List list = Collections.synchronizedList(new ArrayList());
+      ...
+  synchronized(list) {
+      Iterator i = list.iterator(); // Must be in synchronized block
+      while (i.hasNext())
+          foo(i.next());
+  }
+ 不遵从此建议将导致无法确定的行为。 
+如果指定列表是可序列化的，则返回的列表也将是可序列化的。 
+
+
+参数：
+list - 被“包装”在同步列表中的列表。 
+返回：
+指定列表的同步视图。
+	
+
+GIT：
+	2、进入需要上传的项目目录，右键git bash进行后续操作
+	
+	#初始化新版本库（通过git把项目管理起来）
+	git init
+	#添加所有文件(只是在本地准备好，注意那个“.”表示所有文件)
+	git add .
+	#提交本地git仓库（引号中是说明信息）
+	git commit -a -m 'version 1.2.3'
+	#连接远程仓库
+	git remote add origin https://github.com/liyintao520/Thread.git
+	#推入远程仓库
+	git push origin master 
+
+下载Git上的项目
+四、如何进行拉取github上的项目和修改了代码如何更新
+	1、拉取代码是最简单的，如下命令就搞定，选取你要拉取到的目标目录
+	git clone https://github.com/liyintao520/Thread.git
+	2、修改代码提交，比第一次上传代码简单点，如下
+	git add .
+	git commit -a -m 'version 1.2.3'
+	git push origin master 
+	这里还是要输入用户名、密码的
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+		
+		
+		
